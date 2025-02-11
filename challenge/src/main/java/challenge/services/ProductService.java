@@ -1,6 +1,7 @@
 package challenge.services;
 
 import challenge.DTOs.ProductDTO;
+import challenge.DTOs.UserDTO;
 import challenge.models.Product;
 import challenge.models.User;
 import challenge.repositories.ProductRepository;
@@ -27,8 +28,8 @@ public class ProductService {
      */
     public String createProduct(ProductDTO pro){
         try{
-            String username = pro.getSeller_username();
-            Optional<User> user = userRepository.findByUserName(username);
+            int userId = pro.getId_seller();
+            Optional<User> user = userRepository.findById(userId);
 
             if(user.isEmpty()){
                 return "userNotFound";
@@ -50,7 +51,7 @@ public class ProductService {
 
     /**
      * @param id
-     * @return isSuccess
+     * @return isSuccess => true || false
      */
     public boolean deleteProduct(int id){
         try{
@@ -91,6 +92,10 @@ public class ProductService {
         }
     }
 
+    /**
+     *
+     * @return List<ProductDTO>
+     */
     public List<ProductDTO> getProducts () {
         List<ProductDTO> products = new ArrayList<>();
         try{
@@ -104,11 +109,41 @@ public class ProductService {
                 temp.setPrice(pro.getPrice());
                 temp.setEstate(pro.getEstate());
                 temp.setId_pro(pro.getId());
+                temp.setId_seller(pro.getSeller().getId());
                 products.add(temp);
             }
             return products;
         } catch (Exception e) {
             throw new RuntimeException("Error al obtener productos ",e);
+        }
+    }
+
+    /**
+     *
+     * @param pro ProductDTO
+     * @return ProductDTO
+     */
+    public ProductDTO updateProduct(ProductDTO pro){
+        Optional<Product> proOptional = productRepository.findById(pro.getId_pro());
+        int idSeller = pro.getId_seller();
+        Optional<User> userOptional = userRepository.findById(idSeller);
+        Product updated_pro;
+        if(proOptional.isEmpty()){
+            return null;
+        } else {
+
+            if (userOptional.isEmpty()) return null;
+
+            Product existing_pro = proOptional.get();
+            existing_pro.setStock(pro.getStock());
+            existing_pro.setProduct_name(pro.getProduct_name());
+            existing_pro.setPrice(pro.getPrice());
+            existing_pro.setEstate(pro.getEstate());
+            existing_pro.setSeller(userOptional.get());
+
+            updated_pro = productRepository.save(existing_pro);
+
+            return new ProductDTO(userOptional.get().getId(), updated_pro.getEstate(), updated_pro.getId(), updated_pro.getPrice(), updated_pro.getProduct_name(), updated_pro.getSeller().getUserName(), updated_pro.getStock());
         }
     }
 }

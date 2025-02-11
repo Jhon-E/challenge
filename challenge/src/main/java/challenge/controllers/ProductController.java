@@ -1,6 +1,7 @@
 package challenge.controllers;
 
 import challenge.DTOs.ProductDTO;
+import challenge.models.User;
 import challenge.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/products")
 public class ProductController {
@@ -26,7 +28,7 @@ public class ProductController {
         } else if(opt.equals("success")){
             return ResponseEntity.status(200).build();
         } else {
-            return ResponseEntity.status(500).body("Error al guardar el producto.");
+            return ResponseEntity.status(409).body("Error al guardar el producto.");
         }
     }
 
@@ -46,10 +48,19 @@ public class ProductController {
         return ResponseEntity.ok(pro);
     }
 
+    @PutMapping("/update")
+    public ResponseEntity updateUser(@RequestBody ProductDTO request) {
+        if(productService.updateProduct(request) != null){
+            return ResponseEntity.status(200).body("Datos del producto "+ request.getProduct_name() +" actualizados con exito.");
+        } else {
+            return ResponseEntity.status(409).body("Error al actualizar.");
+        }
+    }
+
     @GetMapping()
     public ResponseEntity getProducts(){
         List<ProductDTO> product_list = productService.getProducts();
-        if(product_list.isEmpty()) return ResponseEntity.status(300).body("Aún no hay productos registrados.");
+        if(product_list.isEmpty()) return ResponseEntity.status(402).body("Aún no hay productos registrados.");
         return ResponseEntity.ok(product_list);
     }
 }

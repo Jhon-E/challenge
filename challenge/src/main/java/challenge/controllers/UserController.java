@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import challenge.models.User;
 
+import java.util.List;
+
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -28,7 +31,7 @@ public class UserController {
         if(userService.deleteUser(id)){
             return ResponseEntity.status(200).body("Eliminado con exito");
         } else {
-            return ResponseEntity.status(200).body("Error al eliminar usuario");
+            return ResponseEntity.status(409).body("Error al eliminar usuario");
         }
     }
 
@@ -37,13 +40,14 @@ public class UserController {
         if(userService.updateUser(user) != null){
             return ResponseEntity.status(200).body("Datos de "+ user.getUserName()+" actualizados con exito.");
         } else {
-            return ResponseEntity.status(200).body("Error al actualizar.");
+            return ResponseEntity.status(409).body("Error al actualizar.");
         }
     }
 
     @GetMapping()
     public ResponseEntity getUsers(){
-        return ResponseEntity.ok(userService.getUsers());
+        List<UserDTO> users = userService.getUsers();
+        return ResponseEntity.ok(users);
     }
 
 }

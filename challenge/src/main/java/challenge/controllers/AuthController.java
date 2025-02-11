@@ -6,11 +6,9 @@ import challenge.models.User;
 import challenge.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -27,17 +25,17 @@ public class AuthController {
         if(user != null){
             return ResponseEntity.ok(user);
         } else {
-            return ResponseEntity.status(301).body("Usuario inválido");
+            return ResponseEntity.status(409).body("Este usuario no existe.");
         }
     }
 
     @PostMapping("/signin")
     public ResponseEntity signUser(@RequestBody User user_request){
+
         UserDTO user = authService.signin(user_request);
-        if(user != null){
-            return ResponseEntity.ok(user);
-        } else {
-            return ResponseEntity.status(301).body("Este usuario ya existe.");
-        }
+
+        if(user == null) return ResponseEntity.status(409).body("Este usuario ya existe.");
+
+        return ResponseEntity.ok(user);
     }
 }

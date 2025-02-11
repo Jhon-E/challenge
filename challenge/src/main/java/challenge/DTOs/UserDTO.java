@@ -1,13 +1,25 @@
 package challenge.DTOs;
 
 public class UserDTO {
+    private int id;
     private String userName, lastName, email, role;
 
-    public UserDTO(String email, String userName, String role, String lastName) {
+    public UserDTO(){}
+
+    public UserDTO(int id, String email, String userName, String role, String lastName) {
+        this.id = id;
         this.email = email;
         this.userName = userName;
         this.role = role;
         this.lastName = lastName;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getEmail() {
